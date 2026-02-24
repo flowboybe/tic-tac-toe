@@ -26,10 +26,20 @@ function renderGrid (dimension) {
     }
 }
 
+let arr = [[' ',' ',' '],[' ',' ',' '],[' ',' ',' ']];
+let turn = 1;
+
 function cellClickHandler (row, col) {
     // Пиши код тут
     console.log(`Clicked on cell: ${row}, ${col}`);
-
+    let symbol = ' ';
+    if (turn === 1)
+        symbol = 'X';
+    else
+        symbol = 'O';
+    turn = turn % 2 + 1;
+    arr[row][col] = symbol;
+    renderSymbolInCell(symbol, row, col);
 
     /* Пользоваться методом для размещения символа в клетке так:
         renderSymbolInCell(ZERO, row, col);
