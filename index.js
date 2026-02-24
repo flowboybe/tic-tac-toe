@@ -5,6 +5,7 @@ const EMPTY = ' ';
 let arr = [];
 let turn = 1;
 let counter = 0;
+let gameFinished = false;
 
 const container = document.getElementById('fieldWrapper');
 
@@ -35,7 +36,7 @@ function renderGrid (dimension) {
 function cellClickHandler (row, col) {
     // Пиши код тут
     console.log(`Clicked on cell: ${row}, ${col}`);
-    if (arr[row][col] !== EMPTY)
+    if (arr[row][col] !== EMPTY || gameFinished)
         return;
     let symbol = ' ';
     if (turn === 1)
@@ -56,20 +57,39 @@ function cellClickHandler (row, col) {
 
 function checkWinner () {
     if (counter === arr.length * arr[0].length){
+        gameFinished = true;
         alert('Победила дружба')
         return;
     }
-    else if (checkSpecifiedWinner(CROSS))
-        alert('Победили крестики');
-    else if (checkSpecifiedWinner(ZERO))
-        alert('Победили нолики')
+    else {
+        const crossWinLine = checkSpecifiedWinner(CROSS);
+        if (crossWinLine){
+            gameFinished = true;
+            highlightWinningLine(crossWinLine);
+            alert('Победили крестики');
+            return;
+        }
+        
+        const zeroWinLine = checkSpecifiedWinner(ZERO);
+        if (zeroWinLine){
+            alert('Победили нолики');
+            gameFinished = true;
+            highlightWinningLine(zeroWinLine);
+            return;
+        }
+    }
+
 }
 
 function checkSpecifiedWinner (symbol) {
     const size = arr.length;
     for (let i = 0; i < size; i++) {
         if (arr[i].every(cell => cell === symbol)) {
-            return true;
+            const winLine = [];
+            for (let j = 0; j < size; j++) {
+                winLine.push({ row: i, col: j });
+            }
+            return winLine;
         }
     }
 
@@ -82,7 +102,11 @@ function checkSpecifiedWinner (symbol) {
             }
         }
         if (columnWins) {
-            return true;
+            const winLine = [];
+            for (let i = 0; i < size; i++) {
+                winLine.push({ row: i, col: j });
+            }
+            return winLine;
         }
     }
 
@@ -94,7 +118,11 @@ function checkSpecifiedWinner (symbol) {
         }
     }
     if (mainDiagonalWins) {
-        return true;
+        const winLine = [];
+        for (let i = 0; i < size; i++) {
+            winLine.push({ row: i, col: i });
+        }
+        return winLine;
     }
 
     let antiDiagonalWins = true;
@@ -105,7 +133,11 @@ function checkSpecifiedWinner (symbol) {
         }
     }
     if (antiDiagonalWins) {
-        return true;
+        const winLine = [];
+        for (let i = 0; i < size; i++) {
+            winLine.push({ row: i, col: size - 1 - i });
+        }
+        return winLine;
     }
 
     return false;
@@ -116,6 +148,13 @@ function renderSymbolInCell (symbol, row, col, color = '#333') {
 
     targetCell.textContent = symbol;
     targetCell.style.color = color;
+}
+
+function highlightWinningLine (winLine) {
+    winLine.forEach(cell => {
+        const targetCell = findCell(cell.row, cell.col);
+        targetCell.style.color = 'red';
+    });
 }
 
 function findCell (row, col) {
@@ -130,6 +169,11 @@ function addResetListener () {
 
 function resetClickHandler () {
     console.log('reset!');
+    arr = [];
+    turn = 1;
+    gameFinished = false;
+    counter = 0;
+    startGame();
 }
 
 
