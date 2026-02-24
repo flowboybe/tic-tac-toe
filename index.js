@@ -6,6 +6,7 @@ let arr = [];
 let turn = 1;
 let counter = 0;
 let gameFinished = false;
+let dumbBot = true;
 
 const container = document.getElementById('fieldWrapper');
 
@@ -47,12 +48,33 @@ function cellClickHandler (row, col) {
     arr[row][col] = symbol;
     counter++;
     renderSymbolInCell(symbol, row, col);
+    if (dumbBot)
+        handleDumbBot();
 
-    checkWinner();
+    if (!gameFinished)
+        checkWinner();
 
     /* Пользоваться методом для размещения символа в клетке так:
         renderSymbolInCell(ZERO, row, col);
      */
+}
+
+function handleDumbBot () {
+    while (true){
+        let xCord = Math.floor(Math.random() * arr.length);
+        let yCord = Math.floor(Math.random() * arr.length);
+        if (arr[xCord][yCord] === EMPTY){
+            arr[xCord][yCord] = ZERO;
+            turn = turn % 2 + 1;
+            counter++;
+            renderSymbolInCell(ZERO, xCord, yCord);
+
+            checkWinner();
+            break;
+        }
+    }
+
+
 }
 
 function checkWinner () {
