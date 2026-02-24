@@ -3,11 +3,14 @@ const ZERO = 'O';
 const EMPTY = ' ';
 
 const container = document.getElementById('fieldWrapper');
+const red = '#ff0000';
 
 let points = [];
 let turn = 1;
 let completeTurn = 0;
 let endGame = false;
+let bot = true;
+let bot_turn = true;
 
 startGame();
 addResetListener();
@@ -33,6 +36,18 @@ function renderGrid (dimension) {
         container.appendChild(row);
         points.push(line)
     }
+}
+
+function easyAI(){
+    let possible = [];
+    for (let i = 0; i < points.length; i++){
+        for (let j = 0; j < points.length; j++){
+            if (points[i][j] == 0){
+                possible.push([i, j]);
+            }
+        }
+    }
+    return possible;
 }
 
 function cellClickHandler (row, col) {
@@ -63,6 +78,20 @@ function cellClickHandler (row, col) {
             alert("Победила дружба");
         }
     }
+    if(bot){
+        if (bot_turn){
+            let pV = easyAI();
+            if (pV.length != 0){
+                bot_turn = false;
+                console.log(1)
+                let v = pV[Math.floor(Math.random() * (pV.length - 0))];
+                cellClickHandler(v[0], v[1]);
+            }
+        }
+        else{
+            bot_turn = true;
+        }
+    }
 }
 
 function checkWinner(symbol, figure){
@@ -70,28 +99,28 @@ function checkWinner(symbol, figure){
     for(let i = 0; i < 3; i++){
         if (points[0][i] == symbol && points[1][i] == symbol && points[2][i] == symbol){
             win = true;
-            renderSymbolInCell(figure, 0, i);
-            renderSymbolInCell(figure, 1, i);
-            renderSymbolInCell(figure, 2, i);
+            renderSymbolInCell(figure, 0, i, red);
+            renderSymbolInCell(figure, 1, i, red);
+            renderSymbolInCell(figure, 2, i, red);
         }
         if (points[i][0] == symbol && points[i][1] == symbol && points[i][2] == symbol){
             win = true;
-            renderSymbolInCell(figure, i, 0);
-            renderSymbolInCell(figure, i, 1);
-            renderSymbolInCell(figure, i, 2);
+            renderSymbolInCell(figure, i, 0, red);
+            renderSymbolInCell(figure, i, 1, red);
+            renderSymbolInCell(figure, i, 2, red);
         }
     }
     if (points[0][0] == symbol && points[1][1] == symbol && points[2][2] == symbol){
         win = true;
-        renderSymbolInCell(figure, 0, 0);
-        renderSymbolInCell(figure, 1, 1);
-        renderSymbolInCell(figure, 2, 2);
+        renderSymbolInCell(figure, 0, 0, red);
+        renderSymbolInCell(figure, 1, 1, red);
+        renderSymbolInCell(figure, 2, 2, red);
     }
     if (points[0][2] == symbol && points[1][1] == symbol && points[2][0] == symbol){
         win = true;
-        renderSymbolInCell(figure, 0, 2);
-        renderSymbolInCell(figure, 1, 1);
-        renderSymbolInCell(figure, 2, 0);        
+        renderSymbolInCell(figure, 0, 2, red);
+        renderSymbolInCell(figure, 1, 1, red);
+        renderSymbolInCell(figure, 2, 0, red);        
     }
     return win;
 }
@@ -114,6 +143,11 @@ function addResetListener () {
 }
 
 function resetClickHandler () {
+    points = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+    turn = 1;
+    completeTurn = 0;
+    endGame = false;
+    renderGrid(3);
     console.log('reset!');
 }
 
